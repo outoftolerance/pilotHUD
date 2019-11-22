@@ -116,9 +116,9 @@ namespace pilotHUD
     public static readonly DependencyProperty BetaProperty =
         DependencyProperty.Register("Beta", typeof(double), typeof(hudControl), new FrameworkPropertyMetadata((double)0, GestureChangedCallback));
 
-    private const int VERTICAL_DEG_TO_DISP    = 36;
-    private const int HORIZONTAL_DEG_TO_DISP  = 45;
-    private const int YAW_COMPASS_DEG_TO_DISP = 26;
+    private const int VERTICAL_DEG_TO_DISP    = 45; //default: 36
+    private const int HORIZONTAL_DEG_TO_DISP  = 60; //default: 45
+    private const int YAW_COMPASS_DEG_TO_DISP = 30; //default: 26
 
     void DrawGroundAndSky(double pitchDeg)
     {
@@ -182,8 +182,8 @@ namespace pilotHUD
       line.X2 = rectDimension;
       line.Y1 = offset;
       line.Y2 = offset;
-      line.Stroke = Brushes.White;
-      line.StrokeThickness = 2;
+      line.Stroke = Brushes.DarkGray;
+      line.StrokeThickness = 3;
 
 
       Canvas_Background.Children.Add(gndRect);
@@ -254,7 +254,7 @@ namespace pilotHUD
         txtBlkL.HorizontalContentAlignment = HorizontalAlignment.Left;
         txtBlkL.Text = val.ToString("##0");
         txtBlkL.Foreground = Brushes.White;
-        txtBlkL.FontSize = 16;
+        txtBlkL.FontSize = 12;
         txtBlkL.FontWeight = FontWeights.Bold;
         Canvas.SetTop(txtBlkL, -offset - 13);
         Canvas.SetLeft(txtBlkL, -120);
@@ -265,7 +265,7 @@ namespace pilotHUD
         txtBlkR.HorizontalContentAlignment = HorizontalAlignment.Right;
         txtBlkR.Text = val.ToString("##0");
         txtBlkR.Foreground = Brushes.White;
-        txtBlkR.FontSize = 16;
+        txtBlkR.FontSize = 12;
         txtBlkR.FontWeight = FontWeights.Bold;
         Canvas.SetTop(txtBlkR, -offset - 13);
         Canvas.SetRight(txtBlkR, -120);
@@ -387,7 +387,7 @@ namespace pilotHUD
             var ticktext = new BorderTextLabel();
             ticktext.FontFamily = new FontFamily("Courier New");
             ticktext.Stroke = Brushes.White;
-            ticktext.FontSize = 14;
+            ticktext.FontSize = 10;
             int txt = (i + roundedStart);
             if (txt < 0)
             {
@@ -501,7 +501,7 @@ namespace pilotHUD
 
     private void DrawZeroRollTick(double circleRad)
     {
-      Polygon triangle = CreateTriangle(0, 0, 12, -16, -12, -16);
+      Polygon triangle = CreateTriangle(0, 0, 6, -10, -6, -10);
 
       Canvas.SetTop(triangle, -circleRad);
       Canvas_HUD.Children.Add(triangle);
@@ -509,7 +509,7 @@ namespace pilotHUD
 
     private void DrawRollIndicator(double circleRad, double rollAngle)
     {
-      Polygon triangle = CreateTriangle(0, 0, 9, 12, -9, 12);
+      Polygon triangle = CreateTriangle(0, 0, 3, 6, -3, 6);
 
       Polygon trapezoid = new Polygon();
       trapezoid.Stroke = Brushes.White;
@@ -517,10 +517,10 @@ namespace pilotHUD
       trapezoid.StrokeThickness = 1;
       trapezoid.HorizontalAlignment = HorizontalAlignment.Left;
       trapezoid.VerticalAlignment = VerticalAlignment.Center;
-      Point trapP1 = new Point(-12, 16);
-      Point trapP2 = new Point(12, 16);
-      Point trapP3 = new Point(15, 20);
-      Point trapP4 = new Point(-15, 20);
+      Point trapP1 = new Point(-5, 9);
+      Point trapP2 = new Point(5, 9);
+      Point trapP3 = new Point(8, 13);
+      Point trapP4 = new Point(-8, 13);
       PointCollection pcTrap = new PointCollection();
       pcTrap.Add(trapP1);
       pcTrap.Add(trapP2);
@@ -561,57 +561,59 @@ namespace pilotHUD
 
     private void DrawClimbRate(double climbRate)
     {
-      var txtBlk = new BorderTextLabel();
-      txtBlk.Stroke = Brushes.White;
-      txtBlk.Text = "VERT\n" + climbRate.ToString("+0.0;-0.0;0.0");
-      txtBlk.Foreground = Brushes.White;
-      txtBlk.FontSize = 20;
-      Canvas.SetTop(txtBlk, -25);
-      Canvas_RightHUD.Children.Add(txtBlk);
+        var txtBlk = new BorderTextLabel();
+        txtBlk.Stroke = Brushes.White;
+        txtBlk.Text = "Climb\n" + climbRate.ToString("+0.0;-0.0;0.0") + "  m/s";
+        txtBlk.Foreground = Brushes.White;
+        txtBlk.FontSize = 10;
+        txtBlk.HorizontalAlignment = HorizontalAlignment.Right;
+        Canvas.SetTop(txtBlk, -125);
+        Canvas.SetRight(txtBlk, -25);
+        Canvas_RightHUD.Children.Add(txtBlk);
 
-      Line zeroLn = new Line();
-      zeroLn.X1 = -10;
-      zeroLn.X2 = -40;
-      zeroLn.Y1 = 0;
-      zeroLn.Y2 = 00;
-      zeroLn.Stroke = Brushes.White;
-      zeroLn.StrokeThickness = 1;
-      Canvas_RightHUD.Children.Add(zeroLn);
+        Line zeroLn = new Line();
+        zeroLn.X1 = 20;
+        zeroLn.X2 = 0;
+        zeroLn.Y1 = 0;
+        zeroLn.Y2 = 00;
+        zeroLn.Stroke = Brushes.White;
+        zeroLn.StrokeThickness = 1;
+        Canvas_RightHUD.Children.Add(zeroLn);
 
-      double maxHUD_Height = Grid_RightHUD.ActualHeight * 0.7;
+        double maxHUD_Height = Grid_RightHUD.ActualHeight * 0.5;
 
-      double magHeight = Math.Abs(climbRate);
-      if (magHeight > MaxClimbRateArrowMag)
-      {
+        double magHeight = Math.Abs(climbRate);
+        if (magHeight > MaxClimbRateArrowMag)
+        {
         magHeight = MaxClimbRateArrowMag;
-      }
+        }
 
-      Rectangle climbMagnitude = new Rectangle();
-      climbMagnitude.Fill = Brushes.White;
-      climbMagnitude.Width = 12;
-      climbMagnitude.Height = maxHUD_Height * (magHeight / (2 * MaxClimbRateArrowMag));
-      Canvas.SetLeft(climbMagnitude, -31);
+        Rectangle climbMagnitude = new Rectangle();
+        climbMagnitude.Fill = Brushes.White;
+        climbMagnitude.Width = 8;
+        climbMagnitude.Height = maxHUD_Height * (magHeight / (2 * MaxClimbRateArrowMag));
+        Canvas.SetLeft(climbMagnitude, 6);
 
-      Polygon triangle = CreateTriangle(-9, 0, 9, 0, 0, 12);
-      Canvas.SetLeft(triangle, -25);
+        Polygon triangle = CreateTriangle(-6, 0, 6, 0, 0, 9);
+        Canvas.SetLeft(triangle, 10);
 
-      if (climbRate > 0)
-      {
+        if (climbRate > 0)
+        {
         Canvas.SetTop(climbMagnitude, -climbMagnitude.Height);
         Canvas.SetTop(triangle, -climbMagnitude.Height);
         triangle.RenderTransform = new RotateTransform(180);
-      }
-      else
-      {
+        }
+        else
+        {
         Canvas.SetTop(triangle, climbMagnitude.Height);
-      }
+        }
 
-      if (Math.Abs(climbRate) > 1.0)
-      {
+        if (Math.Abs(climbRate) > 1.0)
+        {
         // don't draw flickering arrow if bouncing around near 0
         Canvas_RightHUD.Children.Add(triangle);
-      }
-      Canvas_RightHUD.Children.Add(climbMagnitude);
+        }
+        Canvas_RightHUD.Children.Add(climbMagnitude);
     }
 
     private void DrawSpeedAndG(double speed_ms, double mach, double gLoad)
@@ -621,18 +623,18 @@ namespace pilotHUD
       txtBlkGM.Text = "G  " + gLoad.ToString("+0.0;-0.0;0.0") + "\n" +
         "M  " + mach.ToString("0.00");
       txtBlkGM.Foreground = Brushes.White;
-      txtBlkGM.FontSize = 20;
+      txtBlkGM.FontSize = 10;
       Canvas.SetTop(txtBlkGM, -50);
-      Canvas.SetLeft(txtBlkGM, -50);
-      Canvas_LeftHUD.Children.Add(txtBlkGM);
+      Canvas.SetLeft(txtBlkGM, -25);
+      //Canvas_LeftHUD.Children.Add(txtBlkGM);
 
       var txtBlkSpd = new BorderTextLabel();
       txtBlkSpd.Stroke = Brushes.White;
-      txtBlkSpd.Text = "SPEED\nm/s    " + speed_ms.ToString("0");
+      txtBlkSpd.Text = "Speed\n" + speed_ms.ToString("0.0") + "  m/s";
       txtBlkSpd.Foreground = Brushes.White;
-      txtBlkSpd.FontSize = 16;
-      Canvas.SetTop(txtBlkSpd, -200);
-      Canvas.SetLeft(txtBlkSpd, -50);
+      txtBlkSpd.FontSize = 10;
+      Canvas.SetTop(txtBlkSpd, -125);
+      Canvas.SetLeft(txtBlkSpd, -25);
       Canvas_LeftHUD.Children.Add(txtBlkSpd);
     }
 
@@ -747,7 +749,7 @@ namespace pilotHUD
       txtBlkSpd.Text = "\u03B1    " + alpha.ToString("+0.0;-0.0;0.0") +
         "\n\u03B2    " + beta.ToString("+0.0;-0.0;0.0");
       txtBlkSpd.Foreground = Brushes.White;
-      txtBlkSpd.FontSize = 16;
+      txtBlkSpd.FontSize = 12;
       Canvas.SetTop(txtBlkSpd, 200);
       Canvas.SetLeft(txtBlkSpd, -50);
       Canvas_LeftHUD.Children.Add(txtBlkSpd);
